@@ -3,6 +3,8 @@
 
 This repository contains four template projects for GeoSpark and Babylon (v0.1.X-0.2.X). The template projects have been configured properly. You are able to compile, package, and run the code locally without any extra coding.
 
+GeoSpark repository is available here: [GeoSpark GitHub Repository](https://github.com/DataSystemsLab/GeoSpark)
+
 ## Folder structure
 The folder structure of this repository is as follows.
 
