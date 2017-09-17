@@ -23,6 +23,6 @@ assemblyMergeStrategy in assembly := {
 
 libraryDependencies ++= Seq(
   "org.apache.spark" %% "spark-core" % "2.1.1" % "provided",
-  "org.datasyslab" % "geospark" % "0.8.0",
-  "org.datasyslab" % "babylon" % "0.2.1"
+  "org.datasyslab" % "geospark" % "0.8.2",
+  "org.datasyslab" % "babylon" % "0.2.2"
 )
