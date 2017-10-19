@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.serializer.KryoSerializer;
 import org.apache.spark.storage.StorageLevel;
 import org.datasyslab.babylon.core.ImageGenerator;
 import org.datasyslab.babylon.core.ImageStitcher;
@@ -23,6 +24,7 @@ import org.datasyslab.geospark.enums.FileDataSplitter;
 import org.datasyslab.geospark.enums.GridType;
 import org.datasyslab.geospark.enums.IndexType;
 import org.datasyslab.geospark.formatMapper.EarthdataHDFPointMapper;
+import org.datasyslab.geospark.serde.GeoSparkKryoRegistrator;
 import org.datasyslab.geospark.spatialOperator.JoinQuery;
 import org.datasyslab.geospark.spatialRDD.PointRDD;
 import org.datasyslab.geospark.spatialRDD.PolygonRDD;
@@ -300,8 +302,8 @@ public class Example {
 	 */
 	public static void main(String[] args) throws IOException {
 		SparkConf sparkConf = new SparkConf().setAppName("BabylonDemo").setMaster("local[*]");
-		conf.set("spark.serializer", KryoSerializer.class.getName());
-		conf.set("spark.kryo.registrator", GeoSparkKryoRegistrator.class.getName());
+		sparkConf.set("spark.serializer", KryoSerializer.class.getName());
+		sparkConf.set("spark.kryo.registrator", GeoSparkKryoRegistrator.class.getName());
 		sparkContext = new JavaSparkContext(sparkConf);
         Logger.getLogger("org").setLevel(Level.WARN);
         Logger.getLogger("akka").setLevel(Level.WARN);

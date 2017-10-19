@@ -20,11 +20,15 @@ import org.datasyslab.geospark.spatialRDD.PointRDD
 import org.datasyslab.geospark.spatialRDD.PolygonRDD
 import org.datasyslab.geospark.spatialRDD.RectangleRDD
 import com.vividsolutions.jts.geom.Envelope
+import org.apache.spark.serializer.KryoSerializer
 import org.datasyslab.geospark.formatMapper.EarthdataHDFPointMapper
+import org.datasyslab.geospark.serde.GeoSparkKryoRegistrator
 
 
 object ScalaExample extends App{
-	val sparkConf = new SparkConf().setAppName("BabylonDemo").setMaster("local[4]")
+	val sparkConf = new SparkConf().setAppName("BabylonDemo").setMaster("local[*]")
+	sparkConf.set("spark.serializer", classOf[KryoSerializer].getName)
+	sparkConf.set("spark.kryo.registrator", classOf[GeoSparkKryoRegistrator].getName)
 	val sparkContext = new SparkContext(sparkConf)
 	Logger.getLogger("org").setLevel(Level.WARN)
 	Logger.getLogger("akka").setLevel(Level.WARN)
