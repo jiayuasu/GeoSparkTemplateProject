@@ -299,7 +299,9 @@ public class Example {
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public static void main(String[] args) throws IOException {
-		SparkConf sparkConf = new SparkConf().setAppName("BabylonDemo").setMaster("local[4]");
+		SparkConf sparkConf = new SparkConf().setAppName("BabylonDemo").setMaster("local[*]");
+		conf.set("spark.serializer", KryoSerializer.class.getName());
+		conf.set("spark.kryo.registrator", GeoSparkKryoRegistrator.class.getName());
 		sparkContext = new JavaSparkContext(sparkConf);
         Logger.getLogger("org").setLevel(Level.WARN);
         Logger.getLogger("akka").setLevel(Level.WARN);

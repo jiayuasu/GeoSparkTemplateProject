@@ -14,7 +14,9 @@ import org.datasyslab.geospark.spatialRDD.PolygonRDD
 import com.vividsolutions.jts.geom.Coordinate
 import com.vividsolutions.jts.geom.Envelope
 import com.vividsolutions.jts.geom.GeometryFactory
+import org.apache.spark.serializer.KryoSerializer
 import org.datasyslab.geospark.formatMapper.shapefileParser.ShapefileRDD
+import org.datasyslab.geospark.serde.GeoSparkKryoRegistrator
 
 
 /**
@@ -22,7 +24,9 @@ import org.datasyslab.geospark.formatMapper.shapefileParser.ShapefileRDD
 	*/
 object ScalaExample extends App{
 
-	val conf = new SparkConf().setAppName("GeoSparkRunnableExample").setMaster("local[2]")
+	val conf = new SparkConf().setAppName("GeoSparkRunnableExample").setMaster("local[*]")
+	conf.set("spark.serializer", classOf[KryoSerializer].getName)
+	conf.set("spark.kryo.registrator", classOf[GeoSparkKryoRegistrator].getName)
 	val sc = new SparkContext(conf)
 	Logger.getLogger("org").setLevel(Level.WARN)
 	Logger.getLogger("akka").setLevel(Level.WARN)
@@ -135,7 +139,7 @@ object ScalaExample extends App{
 		val objectRDD = new PointRDD(sc, PointRDDInputLocation, PointRDDOffset, PointRDDSplitter, true, StorageLevel.MEMORY_ONLY)
 
 		objectRDD.spatialPartitioning(joinQueryPartitioningType)
-		queryWindowRDD.spatialPartitioning(objectRDD.partitionTree)
+		queryWindowRDD.spatialPartitioning(objectRDD.getPartitioner)
 
 		objectRDD.spatialPartitionedRDD.persist(StorageLevel.MEMORY_ONLY)
 		queryWindowRDD.spatialPartitionedRDD.persist(StorageLevel.MEMORY_ONLY)
@@ -155,7 +159,7 @@ object ScalaExample extends App{
 		val objectRDD = new PointRDD(sc, PointRDDInputLocation, PointRDDOffset, PointRDDSplitter, true, StorageLevel.MEMORY_ONLY)
 
 		objectRDD.spatialPartitioning(joinQueryPartitioningType)
-		queryWindowRDD.spatialPartitioning(objectRDD.partitionTree)
+		queryWindowRDD.spatialPartitioning(objectRDD.getPartitioner)
 
 		objectRDD.buildIndex(PointRDDIndexType,true)
 
@@ -178,7 +182,7 @@ object ScalaExample extends App{
 		val queryWindowRDD = new CircleRDD(objectRDD,0.1)
 
 		objectRDD.spatialPartitioning(GridType.QUADTREE)
-		queryWindowRDD.spatialPartitioning(objectRDD.partitionTree)
+		queryWindowRDD.spatialPartitioning(objectRDD.getPartitioner)
 
 		objectRDD.spatialPartitionedRDD.persist(StorageLevel.MEMORY_ONLY)
 		queryWindowRDD.spatialPartitionedRDD.persist(StorageLevel.MEMORY_ONLY)
@@ -199,7 +203,7 @@ object ScalaExample extends App{
 		val queryWindowRDD = new CircleRDD(objectRDD,0.1)
 
 		objectRDD.spatialPartitioning(GridType.QUADTREE)
-		queryWindowRDD.spatialPartitioning(objectRDD.partitionTree)
+		queryWindowRDD.spatialPartitioning(objectRDD.getPartitioner)
 
 		objectRDD.buildIndex(IndexType.RTREE,true)
 
