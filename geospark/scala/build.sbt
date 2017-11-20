@@ -15,10 +15,8 @@ lazy val root = (project in file(".")).
   )
 
 libraryDependencies ++= Seq(
-  "org.apache.spark" %% "spark-core" % "2.1.0" % "provided",
-  "org.datasyslab" % "geospark" % "0.9.0-SNAPSHOT",
-  "org.geotools" % "gt-metadata" % "17.0" exclude("com.vividsolutions", "jts"),
-  "org.geotools" % "gt-data" % "17.0" exclude("com.vividsolutions", "jts")
+  "org.apache.spark" %% "spark-core" % "2.2.0" % "compile",
+  "org.datasyslab" % "geospark" % "0.9.0-SNAPSHOT"
 )
 
 
@@ -27,6 +25,3 @@ resolvers +=
 
 resolvers +=
   "Open Source Geospatial Foundation Repository" at "http://download.osgeo.org/webdav/geotools"
-
-resolvers +=
-  "Java.net repository" at "http://download.java.net/maven/2"

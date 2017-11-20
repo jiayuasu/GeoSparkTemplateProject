@@ -13,7 +13,7 @@ import org.apache.spark.storage.StorageLevel;
 import org.datasyslab.geospark.enums.FileDataSplitter;
 import org.datasyslab.geospark.enums.GridType;
 import org.datasyslab.geospark.enums.IndexType;
-import org.datasyslab.geospark.formatMapper.shapefileParser.ShapefileRDD;
+import org.datasyslab.geospark.formatMapper.shapefileParser.ShapefileReader;
 import org.datasyslab.geospark.serde.GeoSparkKryoRegistrator;
 import org.datasyslab.geospark.spatialOperator.JoinQuery;
 import org.datasyslab.geospark.spatialOperator.KNNQuery;
@@ -110,11 +110,11 @@ public class Example implements Serializable{
 		PointRDDNumPartitions = 5;
 		PointRDDOffset = 0;
 
-		PolygonRDDInputLocation = resourceFolder + "primaryroads-polygon.csv";
-		PolygonRDDSplitter = FileDataSplitter.CSV;
+		PolygonRDDInputLocation = resourceFolder + "county_small.tsv";
+		PolygonRDDSplitter = FileDataSplitter.WKT;
 		PolygonRDDNumPartitions = 5;
 		PolygonRDDStartOffset = 0;
-		PolygonRDDEndOffset = 8;
+		PolygonRDDEndOffset = -1;
 
 		geometryFactory=new GeometryFactory();
 		kNNQueryPoint=geometryFactory.createPoint(new Coordinate(-84.01, 34.01));
@@ -135,6 +135,7 @@ public class Example implements Serializable{
 			testDistanceJoinQueryUsingIndex();
 			testCRSTransformationSpatialRangeQuery();
 			testCRSTransformationSpatialRangeQueryUsingIndex();
+			testCRSTransformation();
 			testLoadShapefileIntoPolygonRDD();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -338,9 +339,15 @@ public class Example implements Serializable{
 
 	}
 
+	public static void testCRSTransformation()
+	{
+		objectRDD = new PointRDD(sc, PointRDDInputLocation, PointRDDOffset, PointRDDSplitter, true, StorageLevel.MEMORY_ONLY());
+		objectRDD.CRSTransform("epsg:4326","epsg:3005");
+		objectRDD.rawSpatialRDD.count();
+	}
+
 	public static void testLoadShapefileIntoPolygonRDD() throws Exception {
-		ShapefileRDD shapefileRDD = new ShapefileRDD(sc,ShapeFileInputLocation);
-		PolygonRDD spatialRDD = new PolygonRDD(shapefileRDD.getPolygonRDD());
+		PolygonRDD spatialRDD = ShapefileReader.readToPolygonRDD(sc, ShapeFileInputLocation);
 		try {
 			RangeQuery.SpatialRangeQuery(spatialRDD, new Envelope(-180,180,-90,90), false, false).count();
 		} catch (Exception e) {

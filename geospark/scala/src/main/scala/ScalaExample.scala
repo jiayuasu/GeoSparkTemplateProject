@@ -15,7 +15,7 @@ import com.vividsolutions.jts.geom.Coordinate
 import com.vividsolutions.jts.geom.Envelope
 import com.vividsolutions.jts.geom.GeometryFactory
 import org.apache.spark.serializer.KryoSerializer
-import org.datasyslab.geospark.formatMapper.shapefileParser.ShapefileRDD
+import org.datasyslab.geospark.formatMapper.shapefileParser.ShapefileReader
 import org.datasyslab.geospark.serde.GeoSparkKryoRegistrator
 
 
@@ -39,11 +39,11 @@ object ScalaExample extends App{
 	val PointRDDNumPartitions = 5
 	val PointRDDOffset = 0
 
-	val PolygonRDDInputLocation = resourceFolder + "primaryroads-polygon.csv"
-	val PolygonRDDSplitter = FileDataSplitter.CSV
+	val PolygonRDDInputLocation = resourceFolder + "county_small.tsv"
+	val PolygonRDDSplitter = FileDataSplitter.WKT
 	val PolygonRDDNumPartitions = 5
 	val PolygonRDDStartOffset = 0
-	val PolygonRDDEndOffset = 8
+	val PolygonRDDEndOffset = -1
 
 	val geometryFactory=new GeometryFactory()
 	val kNNQueryPoint=geometryFactory.createPoint(new Coordinate(-84.01, 34.01))
@@ -63,6 +63,7 @@ object ScalaExample extends App{
 	testDistanceJoinQueryUsingIndex()
 	testCRSTransformationSpatialRangeQuery()
 	testCRSTransformationSpatialRangeQueryUsingIndex()
+	testCRSTransformation()
 	testLoadShapefileIntoPolygonRDD()
 	sc.stop()
 	System.out.println("All GeoSpark DEMOs passed!")
@@ -252,10 +253,17 @@ object ScalaExample extends App{
 		}
 	}
 
+	def testCRSTransformation():Unit =
+	{
+		val objectRDD = new PointRDD(sc, PointRDDInputLocation, PointRDDOffset, PointRDDSplitter, true, StorageLevel.MEMORY_ONLY)
+		// Run Coordinate Reference Systems Transformation on the original data
+		objectRDD.CRSTransform("epsg:4326","epsg:3005")
+		objectRDD.rawSpatialRDD.count()
+	}
+
 	@throws[Exception]
 	def testLoadShapefileIntoPolygonRDD(): Unit = {
-		val shapefileRDD = new ShapefileRDD(sc, ShapeFileInputLocation)
-		val spatialRDD = new PolygonRDD(shapefileRDD.getPolygonRDD)
+		val spatialRDD = ShapefileReader.readToPolygonRDD(sc, ShapeFileInputLocation)
 		try
 			RangeQuery.SpatialRangeQuery(spatialRDD, new Envelope(-180, 180, -90, 90), false, false).count
 		catch {
