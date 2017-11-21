@@ -27,8 +27,6 @@ import org.datasyslab.geospark.serde.GeoSparkKryoRegistrator
 
 object ScalaExample extends App{
 	val sparkConf = new SparkConf().setAppName("BabylonDemo").setMaster("local[*]")
-	sparkConf.set("spark.serializer", classOf[KryoSerializer].getName)
-	sparkConf.set("spark.kryo.registrator", classOf[GeoSparkKryoRegistrator].getName)
 	val sparkContext = new SparkContext(sparkConf)
 	Logger.getLogger("org").setLevel(Level.WARN)
 	Logger.getLogger("akka").setLevel(Level.WARN)
@@ -154,28 +152,27 @@ object ScalaExample extends App{
 		* @param outputPath the output path
 		* @return true, if successful
 		*/
+	def parallelFilterRenderStitch(outputPath: String): Boolean = {
+		val spatialRDD = new RectangleRDD(sparkContext, RectangleInputLocation, RectangleSplitter, false, RectangleNumPartitions, StorageLevel.MEMORY_ONLY)
+		val visualizationOperator = new HeatMap(1000, 600, USMainLandBoundary, false, 2, 4, 4, true, true)
+		visualizationOperator.Visualize(sparkContext, spatialRDD)
+		val imageGenerator = new ImageGenerator
+		imageGenerator.SaveRasterImageAsLocalFile(visualizationOperator.distributedRasterImage, outputPath, ImageType.PNG)
+		true
+	}
+
+	/**
+		* Parallel filter render no stitch.
+		*
+		* @param outputPath the output path
+		* @return true, if successful
+		*/
 	def parallelFilterRenderNoStitch(outputPath: String): Boolean = {
 		val spatialRDD = new RectangleRDD(sparkContext, RectangleInputLocation, RectangleSplitter, false, RectangleNumPartitions, StorageLevel.MEMORY_ONLY)
 		val visualizationOperator = new HeatMap(1000, 600, USMainLandBoundary, false, 2, 4, 4, true, true)
 		visualizationOperator.Visualize(sparkContext, spatialRDD)
 		val imageGenerator = new ImageGenerator
 		imageGenerator.SaveRasterImageAsLocalFile(visualizationOperator.distributedRasterImage, outputPath, ImageType.PNG)
-		ImageStitcher.stitchImagePartitionsFromLocalFile(outputPath, 1000,600,0,4, 4)
-		true
-	}
-
-	/**
-		* Parallel filter render stitch.
-		*
-		* @param outputPath the output path
-		* @return true, if successful
-		*/
-	def parallelFilterRenderStitch(outputPath: String): Boolean = {
-		val spatialRDD = new RectangleRDD(sparkContext, RectangleInputLocation, RectangleSplitter, false, RectangleNumPartitions, StorageLevel.MEMORY_ONLY)
-		val visualizationOperator = new HeatMap(1000, 600, USMainLandBoundary, false, 2, 4, 4, true, true)
-		visualizationOperator.Visualize(sparkContext, spatialRDD)
-		val imageGenerator = new ImageGenerator
-		imageGenerator.SaveRasterImageAsLocalFile(visualizationOperator.rasterImage, outputPath, ImageType.PNG)
 		true
 	}
 
