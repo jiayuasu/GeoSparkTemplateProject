@@ -15,10 +15,15 @@ lazy val root = (project in file(".")).
   )
 
 libraryDependencies ++= Seq(
-  "org.apache.spark" %% "spark-core" % "2.2.0" % "compile",
-  "org.datasyslab" % "geospark" % "0.9.1"
+  "org.apache.spark" %% "spark-core" % "2.1.2" % "compile",
+  "org.datasyslab" % "geospark" % "1.0.0"
 )
 
+assemblyMergeStrategy in assembly := {
+  case PathList("org.datasyslab", "geospark", xs@_*) => MergeStrategy.first
+  case PathList("META-INF", "MANIFEST.MF") => MergeStrategy.discard
+  case _ => MergeStrategy.first
+}
 
 resolvers +=
   "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
