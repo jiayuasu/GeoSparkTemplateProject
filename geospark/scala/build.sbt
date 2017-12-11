@@ -16,7 +16,7 @@ lazy val root = (project in file(".")).
 
 libraryDependencies ++= Seq(
   "org.apache.spark" %% "spark-core" % "2.2.0" % "compile",
-  "org.datasyslab" % "geospark" % "0.9.0-SNAPSHOT"
+  "org.datasyslab" % "geospark" % "0.9.1"
 )
 
 
