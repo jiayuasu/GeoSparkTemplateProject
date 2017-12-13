@@ -14,11 +14,15 @@ lazy val root = (project in file(".")).
     publishMavenStyle := true
   )
 
+val SparkVersion = "2.2.1"
+
+val GeoSparkVersion = "1.0.1"
+
 libraryDependencies ++= Seq(
-  "org.apache.spark" %% "spark-core" % "2.1.2" % "compile",
-  "org.apache.spark" %% "spark-sql" % "2.1.2" % "compile",
-  "org.datasyslab" % "geospark" % "1.0.0",
-  "org.datasyslab" % "geospark-sql" % "1.0.0"
+  "org.apache.spark" %% "spark-core" % SparkVersion % "compile",
+  "org.apache.spark" %% "spark-sql" % SparkVersion % "compile",
+  "org.datasyslab" % "geospark" % GeoSparkVersion,
+  "org.datasyslab" % "geospark-sql" % GeoSparkVersion
 )
 
 assemblyMergeStrategy in assembly := {
