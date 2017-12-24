@@ -27,7 +27,7 @@ object ScalaExample extends App{
 
   val colocationMapLocation = resourceFolder+"colocationMap"
 
-  visualizeSpatialColocation()
+  //visualizeSpatialColocation()
   calculateSpatialColocation()
 
   System.out.println("Finished GeoSpark Spatial Analysis Example")

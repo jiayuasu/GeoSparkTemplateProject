@@ -1,11 +1,13 @@
 # GeoSpark Template Project
 [![Build Status](https://travis-ci.org/jiayuasu/GeoSparkTemplateProject.svg?branch=master)](https://travis-ci.org/jiayuasu/GeoSparkTemplateProject)
 
-This repository contains five template projects for GeoSpark, GeoSparkSQL and GeoSparkViz. The template projects have been configured properly. You are able to compile, package, and run the code locally without any extra coding.
+This repository contains six template projects for GeoSpark, GeoSparkSQL and GeoSparkViz. The template projects have been configured properly. You are able to compile, package, and run the code locally without any extra coding.
 
 GeoSpark repository is available here: [GeoSpark GitHub Repository](https://github.com/DataSystemsLab/GeoSpark)
 
 The Master branch supports GeoSpark 1.0.0 and later. Old templates for GeoSpark (0.9.1 and earlier), Babylon (0.3 and earlier) are available here: [Old template](https://github.com/jiayuasu/GeoSparkTemplateProject/tree/old-template)
+
+GeoSpark-Analysis is a template that shows how to use GeoSpark in Spatial Data Mining: [GeoSpark-Analysis](https://github.com/jiayuasu/GeoSparkTemplateProject/tree/master/geospark-analysis)
 
 ## Folder structure
 The folder structure of this repository is as follows.
@@ -18,6 +20,8 @@ The folder structure of this repository is as follows.
 * geospark-viz
   * scala: **GeoSparkViz Scala Template Project**
   * java: **GeoSparkViz Java Template Project**
+* geospark-analysis: **GeoSpark spatial data mining project**
+  * Spatial Co-location Pattern Mining: use Ripley's K function and L function 
 
 ## Compile and package
 
@@ -65,6 +69,13 @@ $ sbt assembly
 $ cd ./geospark-viz/java
 $ mvn clean install
 ```
+### GeoSpark Analysis Project
+
+```
+$ cd ./geospark-analysis
+$ sbt assembly
+```
+
 ### Submit your fat jar to Spark
 After running the command mentioned above, you are able to see a fat jar in `./target` folder. Please take it and use `./bin/spark-submit` to submit this jar.
 
