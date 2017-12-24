@@ -9,3 +9,5 @@ cd ../java
 mvn clean install
 cd ../../geospark-sql/scala
 sbt assembly
+cd ../../geospark-analysis
+sbt assembly
