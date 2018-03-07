@@ -15,8 +15,8 @@ lazy val root = (project in file(".")).
   )
 
 libraryDependencies ++= Seq(
-  "org.apache.spark" %% "spark-core" % "2.1.2" % "compile",
-  "org.datasyslab" % "geospark" % "1.0.0"
+  "org.apache.spark" %% "spark-core" % "2.2.1 % "compile",
+  "org.datasyslab" % "geospark" % "1.1.0"
 )
 
 assemblyMergeStrategy in assembly := {

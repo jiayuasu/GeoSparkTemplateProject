@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.serializer.KryoSerializer;
 import org.apache.spark.storage.StorageLevel;
 import org.datasyslab.geospark.enums.FileDataSplitter;
 import org.datasyslab.geospark.enums.GridType;
@@ -19,6 +20,7 @@ import org.datasyslab.geospark.spatialRDD.RectangleRDD;
 import org.datasyslab.geosparkviz.core.ImageGenerator;
 import org.datasyslab.geosparkviz.core.ImageStitcher;
 import org.datasyslab.geosparkviz.core.RasterOverlayOperator;
+import org.datasyslab.geosparkviz.core.Serde.GeoSparkVizKryoRegistrator;
 import org.datasyslab.geosparkviz.extension.visualizationEffect.ChoroplethMap;
 import org.datasyslab.geosparkviz.extension.visualizationEffect.HeatMap;
 import org.datasyslab.geosparkviz.extension.visualizationEffect.ScatterPlot;
@@ -298,7 +300,8 @@ public class Example {
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public static void main(String[] args) throws IOException {
-		SparkConf sparkConf = new SparkConf().setAppName("GeoSparkVizDemo").setMaster("local[*]");
+		SparkConf sparkConf = new SparkConf().setAppName("GeoSparkVizDemo").setMaster("local[*]").set("spark.serializer", KryoSerializer.class.getName())
+		.set("spark.kryo.registrator", GeoSparkVizKryoRegistrator.class.getName());
 		sparkContext = new JavaSparkContext(sparkConf);
         Logger.getLogger("org").setLevel(Level.WARN);
         Logger.getLogger("akka").setLevel(Level.WARN);

@@ -79,8 +79,14 @@ $ sbt assembly
 ### Submit your fat jar to Spark
 After running the command mentioned above, you are able to see a fat jar in `./target` folder. Please take it and use `./bin/spark-submit` to submit this jar.
 
-Note: you need to change Spark Master Address in template projects if you want to run the jar in your Spark cluster. Currently, they are hard coded to `local[4]` which means run locally with 4 cores.
+To run the jar in this way, you need to:
 
+* Either change Spark Master Address in template projects or simply delete it. Currently, they are hard coded to `local[4]` which means run locally with 4 cores.
+
+* Change the dependency packaging scope of Apache Spark from "compile" to "provided". This is a common packaging strategy in Maven and SBT which means do not package Spark into your fat jar. Otherwise, this may lead to a huge jar and version conflicts!
+
+* Make sure the dependency versions in build.sbt and POM.xml are consistent with your Spark version.
+* 
 ## Run template projects locally
 We highly suggest you use IDEs to run template projects on your local machine. For Scala, we recommend IntelliJ IDEA with Scala plug-in. For Java, we recommend IntelliJ IDEA and Eclipse. With the help of IDEs, **you don't have to prepare anything** (even don't need to download and set up Spark!). As long as you have Scala and Java, everything works properly!
 

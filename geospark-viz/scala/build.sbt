@@ -22,9 +22,9 @@ assemblyMergeStrategy in assembly := {
 }
 
 libraryDependencies ++= Seq(
-  "org.apache.spark" %% "spark-core" % "2.1.1" % "compile",
-  "org.datasyslab" % "geospark" % "1.0.0",
-  "org.datasyslab" % "geospark-viz" % "1.0.0",
+  "org.apache.spark" %% "spark-core" % "2.2.1" % "compile",
+  "org.datasyslab" % "geospark" % "1.1.0",
+  "org.datasyslab" % "geospark-viz" % "1.1.0",
   "org.datasyslab" % "sernetcdf" % "0.1.0"
 )
 

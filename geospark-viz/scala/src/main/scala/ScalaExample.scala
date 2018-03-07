@@ -4,19 +4,23 @@ import java.util.Properties
 
 import com.vividsolutions.jts.geom.Envelope
 import org.apache.log4j.{Level, Logger}
+import org.apache.spark.serializer.KryoSerializer
 import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.spark.storage.StorageLevel
 import org.datasyslab.geospark.enums.{FileDataSplitter, GridType, IndexType}
 import org.datasyslab.geospark.formatMapper.EarthdataHDFPointMapper
 import org.datasyslab.geospark.spatialOperator.JoinQuery
 import org.datasyslab.geospark.spatialRDD.{PointRDD, PolygonRDD, RectangleRDD}
+import org.datasyslab.geosparkviz.core.Serde.GeoSparkVizKryoRegistrator
 import org.datasyslab.geosparkviz.core.{ImageGenerator, RasterOverlayOperator}
 import org.datasyslab.geosparkviz.extension.visualizationEffect.{ChoroplethMap, HeatMap, ScatterPlot}
 import org.datasyslab.geosparkviz.utils.{ColorizeOption, ImageType}
 
 
 object ScalaExample extends App{
-	val sparkConf = new SparkConf().setAppName("GeoSparkVizDemo").setMaster("local[*]")
+	val sparkConf = new SparkConf().setAppName("GeoSparkVizDemo").set("spark.serializer", classOf[KryoSerializer].getName)
+		.set("spark.kryo.registrator", classOf[GeoSparkVizKryoRegistrator].getName)
+		.setMaster("local[*]")
 	val sparkContext = new SparkContext(sparkConf)
 	Logger.getLogger("org").setLevel(Level.WARN)
 	Logger.getLogger("akka").setLevel(Level.WARN)

@@ -6,10 +6,10 @@ import org.apache.spark.serializer.KryoSerializer
 import org.apache.spark.sql.SparkSession
 import org.datasyslab.geospark.enums.{GridType, IndexType}
 import org.datasyslab.geospark.formatMapper.shapefileParser.ShapefileReader
-import org.datasyslab.geospark.serde.GeoSparkKryoRegistrator
 import org.datasyslab.geospark.spatialOperator.JoinQuery
 import org.datasyslab.geospark.spatialRDD.{CircleRDD, SpatialRDD}
 import org.datasyslab.geosparksql.utils.{Adapter, GeoSparkSQLRegistrator}
+import org.datasyslab.geosparkviz.core.Serde.GeoSparkVizKryoRegistrator
 import org.datasyslab.geosparkviz.core.{ImageGenerator, RasterOverlayOperator}
 import org.datasyslab.geosparkviz.extension.visualizationEffect.{HeatMap, ScatterPlot}
 import org.datasyslab.geosparkviz.utils.ImageType
@@ -27,7 +27,7 @@ object ScalaExample extends App{
 
   val colocationMapLocation = resourceFolder+"colocationMap"
 
-  //visualizeSpatialColocation()
+  visualizeSpatialColocation()
   calculateSpatialColocation()
 
   System.out.println("Finished GeoSpark Spatial Analysis Example")
@@ -35,7 +35,8 @@ object ScalaExample extends App{
 
   def visualizeSpatialColocation(): Unit =
   {
-    val sparkSession:SparkSession = SparkSession.builder()
+    val sparkSession:SparkSession = SparkSession.builder().config("spark.serializer",classOf[KryoSerializer].getName).
+      config("spark.kryo.registrator", classOf[GeoSparkVizKryoRegistrator].getName)
         .master("local[*]").appName("GeoSpark-Analysis").getOrCreate()
     Logger.getLogger("org").setLevel(Level.WARN)
     Logger.getLogger("akka").setLevel(Level.WARN)
@@ -82,7 +83,7 @@ object ScalaExample extends App{
   def calculateSpatialColocation(): Unit =
   {
     val sparkSession:SparkSession = SparkSession.builder().config("spark.serializer",classOf[KryoSerializer].getName).
-      config("spark.kryo.registrator", classOf[GeoSparkKryoRegistrator].getName).
+      config("spark.kryo.registrator", classOf[GeoSparkVizKryoRegistrator].getName).
       master("local[*]").appName("GeoSpark-Analysis").getOrCreate()
     Logger.getLogger("org").setLevel(Level.WARN)
     Logger.getLogger("akka").setLevel(Level.WARN)
