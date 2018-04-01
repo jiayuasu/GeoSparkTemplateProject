@@ -14,7 +14,6 @@ import org.datasyslab.geospark.enums.FileDataSplitter;
 import org.datasyslab.geospark.enums.GridType;
 import org.datasyslab.geospark.enums.IndexType;
 import org.datasyslab.geospark.formatMapper.shapefileParser.ShapefileReader;
-import org.datasyslab.geospark.serde.GeoSparkKryoRegistrator;
 import org.datasyslab.geospark.spatialOperator.JoinQuery;
 import org.datasyslab.geospark.spatialOperator.KNNQuery;
 import org.datasyslab.geospark.spatialOperator.RangeQuery;
@@ -26,6 +25,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
+import org.datasyslab.geosparkviz.core.Serde.GeoSparkVizKryoRegistrator;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -97,7 +97,7 @@ public class Example implements Serializable{
 	public static void main(String[] args) {
 		SparkConf conf = new SparkConf().setAppName("GeoSparkRunnableExample").setMaster("local[*]");
 		conf.set("spark.serializer", KryoSerializer.class.getName());
-		conf.set("spark.kryo.registrator", GeoSparkKryoRegistrator.class.getName());
+		conf.set("spark.kryo.registrator", GeoSparkVizKryoRegistrator.class.getName());
 		sc = new JavaSparkContext(conf);
 		Logger.getLogger("org").setLevel(Level.WARN);
 		Logger.getLogger("akka").setLevel(Level.WARN);
@@ -222,7 +222,7 @@ public class Example implements Serializable{
 		objectRDD = new PointRDD(sc, PointRDDInputLocation, PointRDDOffset, PointRDDSplitter, true, StorageLevel.MEMORY_ONLY());
 
 		objectRDD.spatialPartitioning(joinQueryPartitioningType);
-		queryWindowRDD.spatialPartitioning(objectRDD.partitionTree);
+		queryWindowRDD.spatialPartitioning(objectRDD.getPartitioner());
 
 		objectRDD.spatialPartitionedRDD.persist(StorageLevel.MEMORY_ONLY());
 		queryWindowRDD.spatialPartitionedRDD.persist(StorageLevel.MEMORY_ONLY());
@@ -243,7 +243,7 @@ public class Example implements Serializable{
 		objectRDD = new PointRDD(sc, PointRDDInputLocation, PointRDDOffset, PointRDDSplitter, true, StorageLevel.MEMORY_ONLY());
 
 		objectRDD.spatialPartitioning(joinQueryPartitioningType);
-		queryWindowRDD.spatialPartitioning(objectRDD.partitionTree);
+		queryWindowRDD.spatialPartitioning(objectRDD.getPartitioner());
 
 		objectRDD.buildIndex(PointRDDIndexType,true);
 
@@ -267,7 +267,7 @@ public class Example implements Serializable{
 		CircleRDD queryWindowRDD = new CircleRDD(objectRDD,0.1);
 
 		objectRDD.spatialPartitioning(GridType.QUADTREE);
-		queryWindowRDD.spatialPartitioning(objectRDD.partitionTree);
+		queryWindowRDD.spatialPartitioning(objectRDD.getPartitioner());
 
 		objectRDD.spatialPartitionedRDD.persist(StorageLevel.MEMORY_ONLY());
 		queryWindowRDD.spatialPartitionedRDD.persist(StorageLevel.MEMORY_ONLY());
@@ -290,7 +290,7 @@ public class Example implements Serializable{
 		CircleRDD queryWindowRDD = new CircleRDD(objectRDD,0.1);
 
 		objectRDD.spatialPartitioning(GridType.QUADTREE);
-		queryWindowRDD.spatialPartitioning(objectRDD.partitionTree);
+		queryWindowRDD.spatialPartitioning(objectRDD.getPartitioner());
 
 		objectRDD.buildIndex(IndexType.RTREE,true);
 

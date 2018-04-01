@@ -1,22 +1,13 @@
-import org.apache.log4j.Level
-import org.apache.log4j.Logger
-import org.apache.spark.{SparkConf, SparkContext}
-import org.apache.spark.storage.StorageLevel
-import org.datasyslab.geospark.enums.FileDataSplitter
-import org.datasyslab.geospark.enums.GridType
-import org.datasyslab.geospark.enums.IndexType
-import org.datasyslab.geospark.spatialOperator.JoinQuery
-import org.datasyslab.geospark.spatialOperator.KNNQuery
-import org.datasyslab.geospark.spatialOperator.RangeQuery
-import org.datasyslab.geospark.spatialRDD.CircleRDD
-import org.datasyslab.geospark.spatialRDD.PointRDD
-import org.datasyslab.geospark.spatialRDD.PolygonRDD
-import com.vividsolutions.jts.geom.Coordinate
-import com.vividsolutions.jts.geom.Envelope
-import com.vividsolutions.jts.geom.GeometryFactory
+import com.vividsolutions.jts.geom.{Coordinate, Envelope, GeometryFactory}
+import org.apache.log4j.{Level, Logger}
 import org.apache.spark.serializer.KryoSerializer
+import org.apache.spark.storage.StorageLevel
+import org.apache.spark.{SparkConf, SparkContext}
+import org.datasyslab.geospark.enums.{FileDataSplitter, GridType, IndexType}
 import org.datasyslab.geospark.formatMapper.shapefileParser.ShapefileReader
-import org.datasyslab.geospark.serde.GeoSparkKryoRegistrator
+import org.datasyslab.geospark.spatialOperator.{JoinQuery, KNNQuery, RangeQuery}
+import org.datasyslab.geospark.spatialRDD.{CircleRDD, PointRDD, PolygonRDD}
+import org.datasyslab.geosparkviz.core.Serde.GeoSparkVizKryoRegistrator
 
 
 /**
@@ -26,7 +17,7 @@ object ScalaExample extends App{
 
 	val conf = new SparkConf().setAppName("GeoSparkRunnableExample").setMaster("local[*]")
 	conf.set("spark.serializer", classOf[KryoSerializer].getName)
-	conf.set("spark.kryo.registrator", classOf[GeoSparkKryoRegistrator].getName)
+	conf.set("spark.kryo.registrator", classOf[GeoSparkVizKryoRegistrator].getName)
 	val sc = new SparkContext(conf)
 	Logger.getLogger("org").setLevel(Level.WARN)
 	Logger.getLogger("akka").setLevel(Level.WARN)

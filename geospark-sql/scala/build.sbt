@@ -16,13 +16,22 @@ lazy val root = (project in file(".")).
 
 val SparkVersion = "2.2.1"
 
-val GeoSparkVersion = "1.1.0"
+val SparkCompatibleVersion = "2.2"
+
+val HadoopVersion = "2.7.2"
+
+val GeoSparkVersion = "1.1.1-SNAPSHOT"
+
+val dependencyScope = "compile"
 
 libraryDependencies ++= Seq(
-  "org.apache.spark" %% "spark-core" % SparkVersion % "compile",
-  "org.apache.spark" %% "spark-sql" % SparkVersion % "compile",
+  "org.apache.spark" %% "spark-core" % SparkVersion % dependencyScope exclude("org.apache.hadoop", "*"),
+  "org.apache.spark" %% "spark-sql" % SparkVersion % dependencyScope exclude("org.apache.hadoop", "*"),
+  "org.apache.hadoop" % "hadoop-mapreduce-client-core" % HadoopVersion % dependencyScope,
+  "org.apache.hadoop" % "hadoop-common" % HadoopVersion % dependencyScope,
   "org.datasyslab" % "geospark" % GeoSparkVersion,
-  "org.datasyslab" % "geospark-sql_2.2" % GeoSparkVersion
+  "org.datasyslab" % "geospark-sql_".concat(SparkCompatibleVersion) % GeoSparkVersion ,
+  "org.datasyslab" % "geospark-viz" % GeoSparkVersion
 )
 
 assemblyMergeStrategy in assembly := {

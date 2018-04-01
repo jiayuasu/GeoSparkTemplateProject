@@ -3,16 +3,16 @@ import org.apache.log4j.{Level, Logger}
 import org.apache.spark.serializer.KryoSerializer
 import org.apache.spark.sql.SparkSession
 import org.datasyslab.geospark.formatMapper.shapefileParser.ShapefileReader
-import org.datasyslab.geospark.serde.GeoSparkKryoRegistrator
 import org.datasyslab.geospark.spatialRDD.SpatialRDD
 import org.datasyslab.geospark.utils.GeoSparkConf
 import org.datasyslab.geosparksql.utils.{Adapter, GeoSparkSQLRegistrator}
+import org.datasyslab.geosparkviz.core.Serde.GeoSparkVizKryoRegistrator
 
 
 object ScalaExample extends App{
 
 	var sparkSession:SparkSession = SparkSession.builder().config("spark.serializer",classOf[KryoSerializer].getName).
-		config("spark.kryo.registrator", classOf[GeoSparkKryoRegistrator].getName).
+		config("spark.kryo.registrator", classOf[GeoSparkVizKryoRegistrator].getName).
 		master("local[*]").appName("GeoSparkSQL-demo").getOrCreate()
 	Logger.getLogger("org").setLevel(Level.WARN)
 	Logger.getLogger("akka").setLevel(Level.WARN)
@@ -110,7 +110,13 @@ object ScalaExample extends App{
   {
     var spatialRDD = new SpatialRDD[Geometry]
     spatialRDD.rawSpatialRDD = ShapefileReader.readToGeometryRDD(sparkSession.sparkContext, shapefileInputLocation)
-    var shapefileDf = Adapter.toDf(spatialRDD,sparkSession)
-    shapefileDf.show()
+    var rawSpatialDf = Adapter.toDf(spatialRDD,sparkSession)
+    rawSpatialDf.createOrReplaceTempView("rawSpatialDf")
+    var spatialDf = sparkSession.sql("""
+                                       | ST_GeomFromWKT(rddshape), _c1, _c2
+                                       | FROM rawSpatialDf
+                                     """.stripMargin)
+    spatialDf.show()
+    spatialDf.printSchema()
   }
 }
