@@ -113,7 +113,7 @@ object ScalaExample extends App{
     var rawSpatialDf = Adapter.toDf(spatialRDD,sparkSession)
     rawSpatialDf.createOrReplaceTempView("rawSpatialDf")
     var spatialDf = sparkSession.sql("""
-                                       | ST_GeomFromWKT(rddshape), _c1, _c2
+                                       | SELECT ST_GeomFromWKT(rddshape), _c1, _c2
                                        | FROM rawSpatialDf
                                      """.stripMargin)
     spatialDf.show()
