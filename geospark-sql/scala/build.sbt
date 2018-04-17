@@ -20,7 +20,7 @@ val SparkCompatibleVersion = "2.2"
 
 val HadoopVersion = "2.7.2"
 
-val GeoSparkVersion = "1.1.1-SNAPSHOT"
+val GeoSparkVersion = "1.1.2"
 
 val dependencyScope = "compile"
 
@@ -37,6 +37,9 @@ libraryDependencies ++= Seq(
 assemblyMergeStrategy in assembly := {
   case PathList("org.datasyslab", "geospark", xs@_*) => MergeStrategy.first
   case PathList("META-INF", "MANIFEST.MF") => MergeStrategy.discard
+  case path if path.endsWith(".SF") => MergeStrategy.discard
+  case path if path.endsWith(".DSA") => MergeStrategy.discard
+  case path if path.endsWith(".RSA") => MergeStrategy.discard
   case _ => MergeStrategy.first
 }
 
