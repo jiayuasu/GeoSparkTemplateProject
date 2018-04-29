@@ -20,9 +20,13 @@ val SparkCompatibleVersion = "2.2"
 
 val HadoopVersion = "2.7.2"
 
-val GeoSparkVersion = "1.1.2"
+val GeoSparkVersion = "1.1.3"
 
 val dependencyScope = "compile"
+
+logLevel := Level.Warn
+
+logLevel in assembly := Level.Error
 
 libraryDependencies ++= Seq(
   "org.apache.spark" %% "spark-core" % SparkVersion % dependencyScope exclude("org.apache.hadoop", "*"),

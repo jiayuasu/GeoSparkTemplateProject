@@ -10,7 +10,7 @@
           <spark.version>2.2.1</spark.version>
           <spark.compatible.verison>2.2</spark.compatible.verison>
           <hadoop.version>2.7.2</hadoop.version>
-          <geospark.version>1.1.2</geospark.version>
+          <geospark.version>1.1.3</geospark.version>
           <scala.version>2.11</scala.version>
     </properties>
 

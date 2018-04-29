@@ -300,11 +300,13 @@ public class Example {
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public static void main(String[] args) throws IOException {
+		Logger.getLogger("org").setLevel(Level.WARN);
+		Logger.getLogger("akka").setLevel(Level.WARN);
+
 		SparkConf sparkConf = new SparkConf().setAppName("GeoSparkVizDemo").setMaster("local[*]").set("spark.serializer", KryoSerializer.class.getName())
 		.set("spark.kryo.registrator", GeoSparkVizKryoRegistrator.class.getName());
 		sparkContext = new JavaSparkContext(sparkConf);
-        Logger.getLogger("org").setLevel(Level.WARN);
-        Logger.getLogger("akka").setLevel(Level.WARN);
+
         prop = new Properties();
         
         String resourcePath = "src/test/resources/";

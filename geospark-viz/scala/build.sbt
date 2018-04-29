@@ -21,9 +21,13 @@ val SparkCompatibleVersion = "2.2"
 
 val HadoopVersion = "2.7.2"
 
-val GeoSparkVersion = "1.1.2"
+val GeoSparkVersion = "1.1.3"
 
 val dependencyScope = "compile"
+
+logLevel := Level.Warn
+
+logLevel in assembly := Level.Error
 
 assemblyMergeStrategy in assembly := {
   case PathList("org.datasyslab", "geospark", xs@_*) => MergeStrategy.first

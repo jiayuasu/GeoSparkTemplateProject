@@ -11,10 +11,12 @@ import org.datasyslab.geospark.spatialRDD.PointRDD
 import com.vividsolutions.jts.geom.Envelope
 
 object ScalaEarthdataMapperRunnableExample extends App {
-  val conf = new SparkConf().setAppName("EarthdataMapperRunnableExample").setMaster("local[2]")
-  val sc = new SparkContext(conf)
   Logger.getLogger("org").setLevel(Level.WARN)
   Logger.getLogger("akka").setLevel(Level.WARN)
+
+  val conf = new SparkConf().setAppName("EarthdataMapperRunnableExample").setMaster("local[2]")
+  val sc = new SparkContext(conf)
+
   val InputLocation = System.getProperty("user.dir") + "/src/test/resources/modis/modis.csv"
   val splitter = FileDataSplitter.CSV
   val indexType = IndexType.RTREE

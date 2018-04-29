@@ -5,8 +5,8 @@ import java.util.Properties
 import com.vividsolutions.jts.geom.Envelope
 import org.apache.log4j.{Level, Logger}
 import org.apache.spark.serializer.KryoSerializer
-import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.spark.storage.StorageLevel
+import org.apache.spark.{SparkConf, SparkContext}
 import org.datasyslab.geospark.enums.{FileDataSplitter, GridType, IndexType}
 import org.datasyslab.geospark.formatMapper.EarthdataHDFPointMapper
 import org.datasyslab.geospark.spatialOperator.JoinQuery
@@ -18,12 +18,14 @@ import org.datasyslab.geosparkviz.utils.{ColorizeOption, ImageType}
 
 
 object ScalaExample extends App{
+	Logger.getLogger("org").setLevel(Level.WARN)
+	Logger.getLogger("akka").setLevel(Level.WARN)
+
 	val sparkConf = new SparkConf().setAppName("GeoSparkVizDemo").set("spark.serializer", classOf[KryoSerializer].getName)
 		.set("spark.kryo.registrator", classOf[GeoSparkVizKryoRegistrator].getName)
 		.setMaster("local[*]")
 	val sparkContext = new SparkContext(sparkConf)
-	Logger.getLogger("org").setLevel(Level.WARN)
-	Logger.getLogger("akka").setLevel(Level.WARN)
+
 	val prop = new Properties()
 	val resourcePath = "src/test/resources/"
 	val demoOutputPath = "target/demo"

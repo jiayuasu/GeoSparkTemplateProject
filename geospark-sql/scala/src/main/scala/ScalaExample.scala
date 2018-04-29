@@ -10,14 +10,14 @@ import org.datasyslab.geosparkviz.core.Serde.GeoSparkVizKryoRegistrator
 
 
 object ScalaExample extends App{
+  Logger.getLogger("org").setLevel(Level.WARN)
+  Logger.getLogger("akka").setLevel(Level.WARN)
 
 	var sparkSession:SparkSession = SparkSession.builder().config("spark.serializer",classOf[KryoSerializer].getName).
 		config("spark.kryo.registrator", classOf[GeoSparkVizKryoRegistrator].getName).
 		master("local[*]").appName("GeoSparkSQL-demo").getOrCreate()
-	Logger.getLogger("org").setLevel(Level.WARN)
-	Logger.getLogger("akka").setLevel(Level.WARN)
 
-	GeoSparkSQLRegistrator.registerAll(sparkSession.sqlContext)
+	GeoSparkSQLRegistrator.registerAll(sparkSession)
 
 
 	val resourceFolder = System.getProperty("user.dir")+"/src/test/resources/"

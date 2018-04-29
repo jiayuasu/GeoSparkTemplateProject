@@ -27,6 +27,9 @@ object ScalaExample extends App{
 
   val colocationMapLocation = resourceFolder+"colocationMap"
 
+  Logger.getLogger("org").setLevel(Level.WARN)
+  Logger.getLogger("akka").setLevel(Level.WARN)
+
   visualizeSpatialColocation()
   calculateSpatialColocation()
 
@@ -38,10 +41,8 @@ object ScalaExample extends App{
     val sparkSession:SparkSession = SparkSession.builder().config("spark.serializer",classOf[KryoSerializer].getName).
       config("spark.kryo.registrator", classOf[GeoSparkVizKryoRegistrator].getName)
         .master("local[*]").appName("GeoSpark-Analysis").getOrCreate()
-    Logger.getLogger("org").setLevel(Level.WARN)
-    Logger.getLogger("akka").setLevel(Level.WARN)
 
-    GeoSparkSQLRegistrator.registerAll(sparkSession.sqlContext)
+    GeoSparkSQLRegistrator.registerAll(sparkSession)
 
     // Prepare NYC area landmarks which includes airports, museums, colleges, hospitals
     var arealmRDD = ShapefileReader.readToPolygonRDD(sparkSession.sparkContext, nycArealandmarkShapefileLocation)
@@ -85,10 +86,8 @@ object ScalaExample extends App{
     val sparkSession:SparkSession = SparkSession.builder().config("spark.serializer",classOf[KryoSerializer].getName).
       config("spark.kryo.registrator", classOf[GeoSparkVizKryoRegistrator].getName).
       master("local[*]").appName("GeoSpark-Analysis").getOrCreate()
-    Logger.getLogger("org").setLevel(Level.WARN)
-    Logger.getLogger("akka").setLevel(Level.WARN)
 
-    GeoSparkSQLRegistrator.registerAll(sparkSession.sqlContext)
+    GeoSparkSQLRegistrator.registerAll(sparkSession)
 
 
     // Prepare NYC area landmarks which includes airports, museums, colleges, hospitals

@@ -14,13 +14,13 @@ import org.datasyslab.geosparkviz.core.Serde.GeoSparkVizKryoRegistrator
 	* The Class ScalaExample.
 	*/
 object ScalaExample extends App{
+	Logger.getLogger("org").setLevel(Level.WARN)
+	Logger.getLogger("akka").setLevel(Level.WARN)
 
 	val conf = new SparkConf().setAppName("GeoSparkRunnableExample").setMaster("local[*]")
 	conf.set("spark.serializer", classOf[KryoSerializer].getName)
 	conf.set("spark.kryo.registrator", classOf[GeoSparkVizKryoRegistrator].getName)
 	val sc = new SparkContext(conf)
-	Logger.getLogger("org").setLevel(Level.WARN)
-	Logger.getLogger("akka").setLevel(Level.WARN)
 
 	val resourceFolder = System.getProperty("user.dir")+"/src/test/resources/"
 

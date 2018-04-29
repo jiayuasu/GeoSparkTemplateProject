@@ -95,12 +95,13 @@ public class Example implements Serializable{
 	 * @param args the arguments
 	 */
 	public static void main(String[] args) {
+        Logger.getLogger("org").setLevel(Level.WARN);
+        Logger.getLogger("akka").setLevel(Level.WARN);
+
 		SparkConf conf = new SparkConf().setAppName("GeoSparkRunnableExample").setMaster("local[*]");
 		conf.set("spark.serializer", KryoSerializer.class.getName());
 		conf.set("spark.kryo.registrator", GeoSparkVizKryoRegistrator.class.getName());
 		sc = new JavaSparkContext(conf);
-		Logger.getLogger("org").setLevel(Level.WARN);
-		Logger.getLogger("akka").setLevel(Level.WARN);
 
 		String resourceFolder = System.getProperty("user.dir")+"/src/test/resources/";
 
