@@ -92,9 +92,15 @@ object ScalaExample extends App{
 
     // Prepare NYC area landmarks which includes airports, museums, colleges, hospitals
     var arealmRDD = new SpatialRDD[Geometry]()
-    arealmRDD.rawSpatialRDD = ShapefileReader.readToGeometryRDD(sparkSession.sparkContext, nycArealandmarkShapefileLocation)
+    arealmRDD = ShapefileReader.readToGeometryRDD(sparkSession.sparkContext, nycArealandmarkShapefileLocation)
     // Use the center point of area landmarks to check co-location. This is required by Ripley's K function.
-    arealmRDD.rawSpatialRDD = arealmRDD.rawSpatialRDD.rdd.map[Geometry](f=>f.getCentroid)
+    arealmRDD.rawSpatialRDD = arealmRDD.rawSpatialRDD.rdd.map[Geometry](f=>
+    {
+      var geom = f.getCentroid
+      // Copy non-spatial attributes
+      geom.setUserData(f.getUserData)
+      geom
+    })
 
     // The following two lines are optional. The purpose is to show the structure of the shapefile.
     var arealmDf = Adapter.toDf(arealmRDD, sparkSession)

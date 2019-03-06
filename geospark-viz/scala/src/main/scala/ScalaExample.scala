@@ -5,15 +5,18 @@ import java.util.Properties
 import com.vividsolutions.jts.geom.Envelope
 import org.apache.log4j.{Level, Logger}
 import org.apache.spark.serializer.KryoSerializer
+import org.apache.spark.sql.SQLContext
 import org.apache.spark.storage.StorageLevel
 import org.apache.spark.{SparkConf, SparkContext}
 import org.datasyslab.geospark.enums.{FileDataSplitter, GridType, IndexType}
 import org.datasyslab.geospark.formatMapper.EarthdataHDFPointMapper
 import org.datasyslab.geospark.spatialOperator.JoinQuery
 import org.datasyslab.geospark.spatialRDD.{PointRDD, PolygonRDD, RectangleRDD}
+import org.datasyslab.geosparksql.utils.GeoSparkSQLRegistrator
 import org.datasyslab.geosparkviz.core.Serde.GeoSparkVizKryoRegistrator
-import org.datasyslab.geosparkviz.core.{ImageGenerator, RasterOverlayOperator}
+import org.datasyslab.geosparkviz.core.{ImageGenerator, ImageSerializableWrapper, RasterOverlayOperator}
 import org.datasyslab.geosparkviz.extension.visualizationEffect.{ChoroplethMap, HeatMap, ScatterPlot}
+import org.datasyslab.geosparkviz.sql.utils.GeoSparkVizRegistrator
 import org.datasyslab.geosparkviz.utils.{ColorizeOption, ImageType}
 
 
@@ -36,6 +39,8 @@ object ScalaExample extends App{
 	val choroplethMapOutputPath = System.getProperty("user.dir") + "/" + demoOutputPath + "/choroplethmap"
 	val parallelFilterRenderStitchOutputPath = System.getProperty("user.dir") + "/" + demoOutputPath + "/parallelfilterrenderstitchheatmap"
 	val earthdataScatterPlotOutputPath = System.getProperty("user.dir") + "/" + demoOutputPath + "/earthdatascatterplot"
+	val sqlApiOutputPath = System.getProperty("user.dir") + "/" + demoOutputPath + "/sql-heatmap"
+
 	val PointInputLocation = "file://" + System.getProperty("user.dir") + "/" + resourcePath + prop.getProperty("inputLocation")
 	val PointOffset = prop.getProperty("offset").toInt
 	val PointSplitter = FileDataSplitter.getFileDataSplitter(prop.getProperty("splitter"))
@@ -71,7 +76,8 @@ object ScalaExample extends App{
 
 	if (buildScatterPlot(scatterPlotOutputPath) && buildHeatMap(heatMapOutputPath)
 		&& buildChoroplethMap(choroplethMapOutputPath) && parallelFilterRenderStitch(parallelFilterRenderStitchOutputPath + "-stitched")
-		&& parallelFilterRenderNoStitch(parallelFilterRenderStitchOutputPath) && earthdataVisualization(earthdataScatterPlotOutputPath))
+		&& parallelFilterRenderNoStitch(parallelFilterRenderStitchOutputPath) && earthdataVisualization(earthdataScatterPlotOutputPath)
+		&& sqlApiVisualization(sqlApiOutputPath))
 		System.out.println("All GeoSparkViz Demos have passed.")
 	else System.out.println("GeoSparkViz Demos failed.")
 
@@ -181,6 +187,58 @@ object ScalaExample extends App{
 		visualizationOperator.Visualize(sparkContext, spatialRDD)
 		val imageGenerator = new ImageGenerator
 		imageGenerator.SaveRasterImageAsLocalFile(visualizationOperator.rasterImage, outputPath, ImageType.PNG)
+		true
+	}
+
+	def sqlApiVisualization(outputPath: String): Boolean = {
+		val sqlContext = new SQLContext(sparkContext)
+		val spark = sqlContext.sparkSession
+		GeoSparkSQLRegistrator.registerAll(spark)
+		GeoSparkVizRegistrator.registerAll(spark)
+		var pointDf = spark.read.format("csv").option("delimiter", ",").option("header", "false").load(PointInputLocation)
+		pointDf.createOrReplaceTempView("pointtable")
+		spark.sql(
+			"""
+				|CREATE OR REPLACE TEMP VIEW pointtable AS
+				|SELECT ST_Point(cast(pointtable._c0 as Decimal(24,20)),cast(pointtable._c1 as Decimal(24,20))) as shape
+				|FROM pointtable
+			""".stripMargin)
+		spark.sql(
+			"""
+				|CREATE OR REPLACE TEMP VIEW pointtable AS
+				|SELECT *
+				|FROM pointtable
+				|WHERE ST_Contains(ST_PolygonFromEnvelope(-126.790180,24.863836,-64.630926,50.000),shape)
+			""".stripMargin)
+		spark.sql(
+			"""
+				|CREATE OR REPLACE TEMP VIEW pixels AS
+				|SELECT pixel, shape FROM pointtable
+				|LATERAL VIEW ST_Pixelize(shape, 256, 256, ST_PolygonFromEnvelope(-126.790180,24.863836,-64.630926,50.000)) AS pixel
+			""".stripMargin)
+		spark.sql(
+			"""
+				|CREATE OR REPLACE TEMP VIEW pixelaggregates AS
+				|SELECT pixel, count(*) as weight
+				|FROM pixels
+				|GROUP BY pixel
+			""".stripMargin)
+		spark.sql(
+			"""
+				|CREATE OR REPLACE TEMP VIEW images AS
+				|SELECT ST_Render(pixel, ST_Colorize(weight, (SELECT max(weight) FROM pixelaggregates), 'red')) AS image
+				|FROM pixelaggregates
+			""".stripMargin)
+		var image = spark.table("images").take(1)(0)(0).asInstanceOf[ImageSerializableWrapper].getImage
+		var imageGenerator = new ImageGenerator
+		imageGenerator.SaveRasterImageAsLocalFile(image, outputPath, ImageType.PNG)
+		spark.sql(
+			"""
+				|CREATE OR REPLACE TEMP VIEW imagestring AS
+				|SELECT ST_EncodeImage(image)
+				|FROM images
+			""".stripMargin)
+		spark.table("imagestring").show()
 		true
 	}
 

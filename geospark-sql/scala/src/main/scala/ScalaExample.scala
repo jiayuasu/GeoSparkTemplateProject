@@ -41,14 +41,14 @@ object ScalaExample extends App{
     var polygonCsvDf = sparkSession.read.format("csv").option("delimiter",",").option("header","false").load(csvPolygonInputLocation)
     polygonCsvDf.createOrReplaceTempView("polygontable")
     polygonCsvDf.show()
-    var polygonDf = sparkSession.sql("select ST_PolygonFromEnvelope(cast(polygontable._c0 as Decimal(24,20)),cast(polygontable._c1 as Decimal(24,20)), cast(polygontable._c2 as Decimal(24,20)), cast(polygontable._c3 as Decimal(24,20)), \"mypolygonid\") as polygonshape from polygontable")
+    var polygonDf = sparkSession.sql("select ST_PolygonFromEnvelope(cast(polygontable._c0 as Decimal(24,20)),cast(polygontable._c1 as Decimal(24,20)), cast(polygontable._c2 as Decimal(24,20)), cast(polygontable._c3 as Decimal(24,20))) as polygonshape from polygontable")
     polygonDf.createOrReplaceTempView("polygondf")
     polygonDf.show()
 
     var pointCsvDF = sparkSession.read.format("csv").option("delimiter",",").option("header","false").load(csvPointInputLocation)
     pointCsvDF.createOrReplaceTempView("pointtable")
     pointCsvDF.show()
-    var pointDf = sparkSession.sql("select ST_Point(cast(pointtable._c0 as Decimal(24,20)),cast(pointtable._c1 as Decimal(24,20)), \"myPointId\") as pointshape from pointtable")
+    var pointDf = sparkSession.sql("select ST_Point(cast(pointtable._c0 as Decimal(24,20)),cast(pointtable._c1 as Decimal(24,20))) as pointshape from pointtable")
     pointDf.createOrReplaceTempView("pointdf")
     pointDf.show()
 
@@ -68,14 +68,14 @@ object ScalaExample extends App{
     var pointCsvDF1 = sparkSession.read.format("csv").option("delimiter",",").option("header","false").load(csvPointInputLocation)
     pointCsvDF1.createOrReplaceTempView("pointtable")
     pointCsvDF1.show()
-    var pointDf1 = sparkSession.sql("select ST_Point(cast(pointtable._c0 as Decimal(24,20)),cast(pointtable._c1 as Decimal(24,20)), \"myPointId\") as pointshape1 from pointtable")
+    var pointDf1 = sparkSession.sql("select ST_Point(cast(pointtable._c0 as Decimal(24,20)),cast(pointtable._c1 as Decimal(24,20))) as pointshape1 from pointtable")
     pointDf1.createOrReplaceTempView("pointdf1")
     pointDf1.show()
 
     var pointCsvDF2 = sparkSession.read.format("csv").option("delimiter",",").option("header","false").load(csvPointInputLocation)
     pointCsvDF2.createOrReplaceTempView("pointtable")
     pointCsvDF2.show()
-    var pointDf2 = sparkSession.sql("select ST_Point(cast(pointtable._c0 as Decimal(24,20)),cast(pointtable._c1 as Decimal(24,20)), \"myPointId\") as pointshape2 from pointtable")
+    var pointDf2 = sparkSession.sql("select ST_Point(cast(pointtable._c0 as Decimal(24,20)),cast(pointtable._c1 as Decimal(24,20))) as pointshape2 from pointtable")
     pointDf2.createOrReplaceTempView("pointdf2")
     pointDf2.show()
 
@@ -92,7 +92,7 @@ object ScalaExample extends App{
 
     var pointCsvDF = sparkSession.read.format("csv").option("delimiter",",").option("header","false").load(csvPointInputLocation)
     pointCsvDF.createOrReplaceTempView("pointtable")
-    var pointDf = sparkSession.sql("select ST_Point(cast(pointtable._c0 as Decimal(24,20)), cast(pointtable._c1 as Decimal(24,20)), \"myPointId\") as arealandmark from pointtable")
+    var pointDf = sparkSession.sql("select ST_Point(cast(pointtable._c0 as Decimal(24,20)), cast(pointtable._c1 as Decimal(24,20))) as arealandmark from pointtable")
     pointDf.createOrReplaceTempView("pointdf")
     var boundary = sparkSession.sql("select ST_Envelope_Aggr(pointdf.arealandmark) from pointdf")
     val coordinates:Array[Coordinate] = new Array[Coordinate](5)
@@ -109,11 +109,11 @@ object ScalaExample extends App{
   def testShapefileConstructor(): Unit =
   {
     var spatialRDD = new SpatialRDD[Geometry]
-    spatialRDD.rawSpatialRDD = ShapefileReader.readToGeometryRDD(sparkSession.sparkContext, shapefileInputLocation)
+    spatialRDD = ShapefileReader.readToGeometryRDD(sparkSession.sparkContext, shapefileInputLocation)
     var rawSpatialDf = Adapter.toDf(spatialRDD,sparkSession)
     rawSpatialDf.createOrReplaceTempView("rawSpatialDf")
     var spatialDf = sparkSession.sql("""
-                                       | SELECT ST_GeomFromWKT(rddshape), _c1, _c2
+                                       | SELECT ST_GeomFromWKT(geometry), STATEFP, COUNTYFP
                                        | FROM rawSpatialDf
                                      """.stripMargin)
     spatialDf.show()
