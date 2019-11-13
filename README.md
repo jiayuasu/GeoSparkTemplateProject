@@ -21,7 +21,8 @@ The folder structure of this repository is as follows.
   * scala: **GeoSparkViz Scala Template Project**
   * java: **GeoSparkViz Java Template Project**
 * geospark-analysis: **GeoSpark spatial data mining project**
-  * Spatial Co-location Pattern Mining: use Ripley's K function and L function 
+  * Spatial Co-location Pattern Mining: use Ripley's K function and L function
+* geospark-zeppelin: **GeoSpark Zeppelin notebook examples**
 
 ## Compile and package
 
