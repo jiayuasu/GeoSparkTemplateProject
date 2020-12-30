@@ -1,3 +1,5 @@
+# This repo has been moved to Apache Sedona repo: https://github.com/apache/incubator-sedona/tree/master/examples
+
 # GeoSpark Template Project
 [![Build Status](https://travis-ci.org/jiayuasu/GeoSparkTemplateProject.svg?branch=master)](https://travis-ci.org/jiayuasu/GeoSparkTemplateProject)
 
